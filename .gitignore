@@ -205,6 +205,9 @@ cython_debug/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
 
+# Local Markdown issue tracker
+.scratch/
+
 # Ruff stuff:
 .ruff_cache/
 
