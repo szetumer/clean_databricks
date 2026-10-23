@@ -44,6 +44,22 @@ _Avoid_: Usage event, access record
 An object name found in a collected definition that cannot be matched to a BrickObject in the analyzed Inventory. It remains visible as an external graph node without inferred metadata.
 _Avoid_: Missing table, deleted object
 
+**Selector**:
+A named, saved group of BrickObjects defined by an ordered list of Steps and re-evaluated against the current Inventory each time it is used.
+_Avoid_: Filter, saved query, tag
+
+**Step**:
+One operation in a Selector that combines the result of the earlier Steps with a set of BrickObjects: union, intersect, filter in, or exclude.
+_Avoid_: Rule, clause, instruction
+
+**Selector Reference**:
+A live use of one Selector inside a Step of another, so later changes to the referenced Selector carry through.
+_Avoid_: Include, import
+
+**Built-in Selector**:
+A Selector the tool defines rather than the user: everything, all BrickTables, all BrickViews, or nothing.
+_Avoid_: Default selector, preset
+
 **Clean Plan**:
 A user-constructed set of proposed cleanup actions that can be reviewed and modified before execution.
 _Avoid_: Deletion list, cleanup recommendation

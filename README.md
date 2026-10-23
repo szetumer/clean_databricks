@@ -106,6 +106,50 @@ BrickObject it depends on. Unresolved and out-of-scope references remain
 visible, and the report never treats an absent dependency as proof that an
 object is unused.
 
+## Select objects
+
+A selector is a named group of Inventory objects built from ordered steps.
+Each step combines the result of the steps before it with its operands, and
+selectors are re-evaluated against the current Inventory whenever they run.
+They read only the Inventory Manifest and never query Databricks.
+
+```powershell
+clean-databricks selector dims --new -u 'dim_* ref_*' -c "Conformed dimensions"
+clean-databricks selector dims -u fct_sales          # union
+clean-databricks selector dims -n sel:tables         # intersect
+clean-databricks selector dims -f 'dim_* fct_*'      # filter in: keep matches
+clean-databricks selector dims -x 'ref_old_*'        # exclude matches
+clean-databricks selector dims -r 2 -x 'ref_*'       # replace step 2
+clean-databricks selector dims -d 2                  # drop step 2
+clean-databricks selector dims --pop                 # drop the last step
+clean-databricks selector dims2 --copyfrom dims      # exact copy
+
+clean-databricks selector show dims                  # steps with running counts
+clean-databricks selector run dims                   # names, one per line
+clean-databricks selector run -e 'sel:dims stg_*'    # one-off, nothing saved
+clean-databricks selector list
+clean-databricks selector delete dims
+```
+
+An operand is space-separated terms combined as a union. Terms are exact
+names, globs, `re:PATTERN` regular expressions that must match the whole
+name, or `sel:NAME` references to other selectors. References are live and
+cycles are refused. The built-in selectors are `sel:all`, `sel:tables`,
+`sel:views` and `sel:none`. Matching ignores case. Quote globs so the shell
+does not expand them.
+
+`-u A B` adds A and B to the result, `-n A B` keeps objects in the result and
+in both A and B, `-f A B` keeps objects in the result and in A or B, and
+`-x A B` removes objects in A or B. A selector must start with `-u` or `-n`.
+Each command makes one change, and conflicting flags are errors. `run` prints
+names to stdout so they can be piped; counts and terms that matched nothing
+go to stderr. A selector cannot be deleted while another selector references
+it.
+
+Selectors are stored as one JSON file each in `INVENTORY_DIR/selectors/`.
+Overwrite inventories replace only `raw/` and `manifest.json`, so selectors
+survive them.
+
 ## Development setup
 
 Create and activate a virtual environment:
